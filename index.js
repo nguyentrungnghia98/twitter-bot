@@ -58,6 +58,7 @@ const css = `
     background: white;
     position: relative;
     display: flex;
+    overflow: hidden;
   }
   .twitter-bot--open .twitter-bot--config {
     height: 580px;
@@ -368,8 +369,15 @@ function getUserMentions(authorization, tweetId) {
     
     xhr.onload = function () {
       if (xhr.status >= 200 && xhr.status < 300) {
-          const userMentions = JSON.parse(xhr.response).data.threaded_conversation_with_injections_v2.instructions[0].entries[0].content.itemContent.tweet_results.result.legacy.entities.user_mentions;
-          resolve(userMentions.map(el => el.id_str));
+          const owner = JSON.parse(xhr.response).data.threaded_conversation_with_injections_v2.instructions[0].entries[0].content.itemContent.tweet_results.result.legacy.user_id_str;
+          const userMentions = JSON.parse(xhr.response).data.threaded_conversation_with_injections_v2.instructions[0].entries[0].content.itemContent.tweet_results.result.legacy.entities.user_mentions.map(el => el.id_str);
+
+          const users = [owner, ...userMentions];
+          const filterDuplicate = users.filter((item, pos) => {
+            return users.indexOf(item) === pos;
+          })
+
+          resolve(filterDuplicate);
         } else {
           reject(xhr.response);
         }
@@ -512,7 +520,6 @@ async function startBot() {
 
   let div = document.createElement("div");
   div.classList.add("twitter-bot");
-  div.classList.add("twitter-bot--open");
   div.innerHTML = `
   <div class="twitter-bot--config">
      <div class="twitter-bot--donate">
