@@ -61,7 +61,7 @@ const css = `
     overflow: hidden;
   }
   .twitter-bot--open .twitter-bot--config {
-    height: 580px;
+    height: 680px;
     display: flex;
     flex-direction: column;
   }
@@ -392,6 +392,14 @@ function getUserMentions(authorization, tweetId) {
 
 let events = [];
 
+async function awaitMillisecond(fn, millisecond) {
+  return new Promise((resolve, reject) => {
+    setTimeout(async () => {
+      resolve(await fn());
+    }, millisecond)
+  })
+}
+
 async function startBot() {
   document.querySelector("#twitter-bot-start").disabled = true;
 
@@ -402,6 +410,7 @@ async function startBot() {
   const isAutoComment = document.querySelector("#twitter-bot-comment-checkbox").checked;
   const commentContent = document.querySelector("#twitter-bot-comment").value;
   const authorization = document.querySelector("#twitter-bot-authorization").value;
+  const millisecond = document.querySelector("#twitter-bot-millisecond").value;
 
   if (!authorization.trim()) {
     return alert('Please enter authorization!');
@@ -443,14 +452,24 @@ async function startBot() {
   for(let tweet of tweets) {
     const {tweetId, url} = tweet;
     try {
-      if (isAutoFavorite) await favoriteTweet(authorization, tweetId)
-      if (isAutoRetweet) await createRetweet(authorization, tweetId)
-      if (isAutoComment) await createComment(authorization, tweetId, commentContent)
-      
+      if (isAutoFavorite) await awaitMillisecond(async () => {
+        await favoriteTweet(authorization, tweetId);
+      }, millisecond);
+      if (isAutoRetweet) await awaitMillisecond(async () => {
+        await createRetweet(authorization, tweetId)
+      }, millisecond);
+      if (isAutoComment) await awaitMillisecond(async () => {
+        await createComment(authorization, tweetId, commentContent)
+      }, millisecond);
+    
       if (isAutoFollow) {
-        const userMentions = await getUserMentions(authorization, tweetId);
+        const userMentions = await awaitMillisecond(async () => {
+          return await getUserMentions(authorization, tweetId);
+        }, millisecond);
         for (let userId of userMentions) {
-          await followUser(authorization, userId);
+          await awaitMillisecond(async () => {
+            await followUser(authorization, userId);
+          }, millisecond);
         }
       }
 
@@ -490,7 +509,8 @@ async function startBot() {
     isAutoFollow,
     isAutoComment,
     commentContent,
-    authorization
+    authorization,
+    millisecond
   }));
 
   document.querySelector("#twitter-bot-start").disabled = false;
@@ -508,14 +528,16 @@ async function startBot() {
     isAutoFollow,
     isAutoComment,
     commentContent,
-    authorization
+    authorization,
+    millisecond
   } = localStorage.getItem('twitter-bot')? JSON.parse(localStorage.getItem('twitter-bot')): {
     isAutoFavorite: true,
     isAutoRetweet: true,
     isAutoFollow: true,
     isAutoComment: true,
     authorization: '',
-    commentContent: ''
+    commentContent: '',
+    millisecond: 1000
   };
 
   let div = document.createElement("div");
@@ -533,6 +555,10 @@ async function startBot() {
           <div class="bot-form--tweets">
             <label for="authorization">Authorization:</label>
             <input value="${authorization}" id="twitter-bot-authorization" placeholder="Enter authorization" id="authorization" name="authorization">
+          </div>
+          <div class="bot-form--tweets">
+            <label for="millisecond">Delay (millisecond):</label>
+            <input value="${millisecond}" id="twitter-bot-millisecond" placeholder="Enter millisecond" id="millisecond" name="millisecond">
           </div>
           <div class="bot-form--tweets">
             <label for="story">Tweets:</label>
