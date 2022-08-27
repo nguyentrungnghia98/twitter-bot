@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Twitter bot
 // @namespace    http://tampermonkey.net/
-// @version      0.1
+// @version      0.1.1
 // @description  try to take over the world!
 // @author       You
 // @match        https://twitter.com/*
@@ -677,7 +677,7 @@ async function startBot() {
      </div>
      
   </div>
-  <button class="twitter-bot--toggle">Open</button>
+  <button class="twitter-bot--toggle">Test</button>
   `;
   document.querySelector("body").appendChild(div);
 
