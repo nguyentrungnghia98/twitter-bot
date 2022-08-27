@@ -303,10 +303,10 @@ function followUser(authorization, userId) {
     
     xhr.onload = function () {
       if (xhr.status >= 200 && xhr.status < 300) {
-          resolve(xhr.response);
-        } else {
-          reject(xhr.response);
-        }
+        resolve(xhr.response);
+      } else {
+        reject(xhr.response);
+      }
     };
     xhr.onerror = (err) => {reject(err);}
     xhr.send(data);
@@ -395,7 +395,11 @@ let events = [];
 async function awaitMillisecond(fn, millisecond) {
   return new Promise((resolve, reject) => {
     setTimeout(async () => {
-      resolve(await fn());
+      try {
+        resolve(await fn());
+      } catch (err) {
+        reject(err);
+      }
     }, millisecond)
   })
 }
