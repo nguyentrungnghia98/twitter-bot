@@ -218,11 +218,10 @@ const getDetailTweetQueryId = "7i51yEC2i_iurfMKZ8mcNw";
 const createRetweetQueryId = "ojPdsZsimiJrUGLR1sjUtA";
 const createTweetQueryId = "sRwUG9yq5p8bdGRhIIywDA";
 
-const xCsrfToken = document.cookie.split('; ').find(item => item.includes('ct0=')).split('=')[1];
-console.log({
-  xCsrfToken
-});
-
+const xCsrfToken = document.cookie
+  .split("; ")
+  .find((item) => item.includes("ct0="))
+  .split("=")[1];
 
 function setHeaders(xhr, authorization, notSetJson) {
   xhr.setRequestHeader("authorization", authorization);
@@ -238,69 +237,13 @@ function setHeaders(xhr, authorization, notSetJson) {
 function favoriteTweet(authorization, tweetId) {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
-    xhr.open('POST', `https://twitter.com/i/api/graphql/${favoriteTweetQueryId}/FavoriteTweet`, true);
+    xhr.open(
+      "POST",
+      `https://twitter.com/i/api/graphql/${favoriteTweetQueryId}/FavoriteTweet`,
+      true
+    );
     setHeaders(xhr, authorization);
-    
-    xhr.onload = function () {
-      if (xhr.status >= 200 && xhr.status < 300) {
-          resolve(xhr.response);
-        } else {
-          reject(xhr.response);
-        }
-    };
-    xhr.onerror = (err) => {reject(err);}
-    xhr.send(JSON.stringify({
-      queryId: favoriteTweetQueryId,
-      variables: {
-        tweet_id: tweetId
-      }
-    }));
-  })
-}
 
-function createRetweet(authorization, tweetId) {
-  return new Promise((resolve, reject) => {
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', `https://twitter.com/i/api/graphql/${createRetweetQueryId}/CreateRetweet`, true);
-    setHeaders(xhr, authorization);
-    
-    xhr.onload = function () {
-      if (xhr.status >= 200 && xhr.status < 300) {
-          resolve(xhr.response);
-        } else {
-          reject(xhr.response);
-        }
-    };
-    xhr.onerror = (err) => {reject(err);}
-    xhr.send(JSON.stringify({
-      queryId: createRetweetQueryId,
-      variables: {
-        tweet_id: tweetId,
-        dark_request: false
-      }
-    }));
-  })
-}
-
-function followUser(authorization, userId) {
-  return new Promise((resolve, reject) => {
-    const data = new FormData();
-    data.append('include_profile_interstitial_type', 1);
-    data.append('include_blocking', 1);
-    data.append('include_blocked_by', 1);
-    data.append('include_followed_by', 1);
-    data.append('include_want_retweets', 1);
-    data.append('include_mute_edge', 1);
-    data.append('include_can_dm', 1);
-    data.append('include_can_media_tag', 1);
-    data.append('include_ext_has_nft_avatar', 1);
-    data.append('skip_status', 1);
-    data.append('user_id', userId);
-    
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', `https://twitter.com/i/api/1.1/friendships/create.json`, true);
-    setHeaders(xhr, authorization, true);
-    
     xhr.onload = function () {
       if (xhr.status >= 200 && xhr.status < 300) {
         resolve(xhr.response);
@@ -308,85 +251,185 @@ function followUser(authorization, userId) {
         reject(xhr.response);
       }
     };
-    xhr.onerror = (err) => {reject(err);}
+    xhr.onerror = (err) => {
+      reject(err);
+    };
+    xhr.send(
+      JSON.stringify({
+        queryId: favoriteTweetQueryId,
+        variables: {
+          tweet_id: tweetId,
+        },
+      })
+    );
+  });
+}
+
+function createRetweet(authorization, tweetId) {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open(
+      "POST",
+      `https://twitter.com/i/api/graphql/${createRetweetQueryId}/CreateRetweet`,
+      true
+    );
+    setHeaders(xhr, authorization);
+
+    xhr.onload = function () {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        resolve(xhr.response);
+      } else {
+        reject(xhr.response);
+      }
+    };
+    xhr.onerror = (err) => {
+      reject(err);
+    };
+    xhr.send(
+      JSON.stringify({
+        queryId: createRetweetQueryId,
+        variables: {
+          tweet_id: tweetId,
+          dark_request: false,
+        },
+      })
+    );
+  });
+}
+
+function followUser(authorization, userId) {
+  return new Promise((resolve, reject) => {
+    const data = new FormData();
+    data.append("include_profile_interstitial_type", 1);
+    data.append("include_blocking", 1);
+    data.append("include_blocked_by", 1);
+    data.append("include_followed_by", 1);
+    data.append("include_want_retweets", 1);
+    data.append("include_mute_edge", 1);
+    data.append("include_can_dm", 1);
+    data.append("include_can_media_tag", 1);
+    data.append("include_ext_has_nft_avatar", 1);
+    data.append("skip_status", 1);
+    data.append("user_id", userId);
+
+    const xhr = new XMLHttpRequest();
+    xhr.open(
+      "POST",
+      `https://twitter.com/i/api/1.1/friendships/create.json`,
+      true
+    );
+    setHeaders(xhr, authorization, true);
+
+    xhr.onload = function () {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        resolve(xhr.response);
+      } else {
+        reject(xhr.response);
+      }
+    };
+    xhr.onerror = (err) => {
+      reject(err);
+    };
     xhr.send(data);
-  })
+  });
 }
 
 function createComment(authorization, tweetId, comment) {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
-    xhr.open('POST', `https://twitter.com/i/api/graphql/${createTweetQueryId}/CreateTweet`, true);
+    xhr.open(
+      "POST",
+      `https://twitter.com/i/api/graphql/${createTweetQueryId}/CreateTweet`,
+      true
+    );
     setHeaders(xhr, authorization);
-    
+
     xhr.onload = function () {
       if (xhr.status >= 200 && xhr.status < 300) {
-          resolve(xhr.response);
-        } else {
-          reject(xhr.response);
-        }
-    };
-    xhr.onerror = (err) => {reject(err);}
-    xhr.send(JSON.stringify({
-      queryId: createTweetQueryId,
-      features: {
-        "dont_mention_me_view_api_enabled": true,
-        "interactive_text_enabled": true,
-        "responsive_web_uc_gql_enabled": true,
-        "vibe_api_enabled": true,
-        "responsive_web_edit_tweet_api_enabled": true,
-        "standardized_nudges_misinfo": true,
-        "tweet_with_visibility_results_prefer_gql_limited_actions_policy_enabled": false,
-        "responsive_web_enhance_cards_enabled": true
-      },
-      variables: {
-        "tweet_text": comment,
-        "reply": {
-            "in_reply_to_tweet_id": tweetId,
-            "exclude_reply_user_ids": []
-        },
-        "media": {
-            "media_entities": [],
-            "possibly_sensitive": false
-        },
-        "withDownvotePerspective": false,
-        "withReactionsMetadata": false,
-        "withReactionsPerspective": false,
-        "withSuperFollowsTweetFields": true,
-        "withSuperFollowsUserFields": true,
-        "semantic_annotation_ids": [],
-        "dark_request": false
+        resolve(xhr.response);
+      } else {
+        reject(xhr.response);
       }
-    }));
-  })
+    };
+    xhr.onerror = (err) => {
+      reject(err);
+    };
+    xhr.send(
+      JSON.stringify({
+        queryId: createTweetQueryId,
+        features: {
+          dont_mention_me_view_api_enabled: true,
+          interactive_text_enabled: true,
+          responsive_web_uc_gql_enabled: true,
+          vibe_api_enabled: true,
+          responsive_web_edit_tweet_api_enabled: true,
+          standardized_nudges_misinfo: true,
+          tweet_with_visibility_results_prefer_gql_limited_actions_policy_enabled: false,
+          responsive_web_enhance_cards_enabled: true,
+        },
+        variables: {
+          tweet_text: comment,
+          reply: {
+            in_reply_to_tweet_id: tweetId,
+            exclude_reply_user_ids: [],
+          },
+          media: {
+            media_entities: [],
+            possibly_sensitive: false,
+          },
+          withDownvotePerspective: false,
+          withReactionsMetadata: false,
+          withReactionsPerspective: false,
+          withSuperFollowsTweetFields: true,
+          withSuperFollowsUserFields: true,
+          semantic_annotation_ids: [],
+          dark_request: false,
+        },
+      })
+    );
+  });
 }
 
 function getUserMentions(authorization, tweetId) {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
-    xhr.open('GET', `https://twitter.com/i/api/graphql/${getDetailTweetQueryId}/TweetDetail?variables=%7B%22focalTweetId%22%3A%22${tweetId}%22%2C%22with_rux_injections%22%3Afalse%2C%22includePromotedContent%22%3Atrue%2C%22withCommunity%22%3Atrue%2C%22withQuickPromoteEligibilityTweetFields%22%3Atrue%2C%22withBirdwatchNotes%22%3Afalse%2C%22withSuperFollowsUserFields%22%3Atrue%2C%22withDownvotePerspective%22%3Afalse%2C%22withReactionsMetadata%22%3Afalse%2C%22withReactionsPerspective%22%3Afalse%2C%22withSuperFollowsTweetFields%22%3Atrue%2C%22withVoice%22%3Atrue%2C%22withV2Timeline%22%3Atrue%7D&features=%7B%22unified_cards_follow_card_query_enabled%22%3Afalse%2C%22dont_mention_me_view_api_enabled%22%3Atrue%2C%22interactive_text_enabled%22%3Atrue%2C%22responsive_web_uc_gql_enabled%22%3Atrue%2C%22vibe_api_enabled%22%3Atrue%2C%22responsive_web_edit_tweet_api_enabled%22%3Atrue%2C%22standardized_nudges_misinfo%22%3Atrue%2C%22tweet_with_visibility_results_prefer_gql_limited_actions_policy_enabled%22%3Afalse%2C%22responsive_web_enhance_cards_enabled%22%3Atrue%7D`, true);
+    xhr.open(
+      "GET",
+      `https://twitter.com/i/api/graphql/${getDetailTweetQueryId}/TweetDetail?variables=%7B%22focalTweetId%22%3A%22${tweetId}%22%2C%22with_rux_injections%22%3Afalse%2C%22includePromotedContent%22%3Atrue%2C%22withCommunity%22%3Atrue%2C%22withQuickPromoteEligibilityTweetFields%22%3Atrue%2C%22withBirdwatchNotes%22%3Afalse%2C%22withSuperFollowsUserFields%22%3Atrue%2C%22withDownvotePerspective%22%3Afalse%2C%22withReactionsMetadata%22%3Afalse%2C%22withReactionsPerspective%22%3Afalse%2C%22withSuperFollowsTweetFields%22%3Atrue%2C%22withVoice%22%3Atrue%2C%22withV2Timeline%22%3Atrue%7D&features=%7B%22unified_cards_follow_card_query_enabled%22%3Afalse%2C%22dont_mention_me_view_api_enabled%22%3Atrue%2C%22interactive_text_enabled%22%3Atrue%2C%22responsive_web_uc_gql_enabled%22%3Atrue%2C%22vibe_api_enabled%22%3Atrue%2C%22responsive_web_edit_tweet_api_enabled%22%3Atrue%2C%22standardized_nudges_misinfo%22%3Atrue%2C%22tweet_with_visibility_results_prefer_gql_limited_actions_policy_enabled%22%3Afalse%2C%22responsive_web_enhance_cards_enabled%22%3Atrue%7D`,
+      true
+    );
     setHeaders(xhr, authorization);
-    
-    xhr.onload = function () {
-      if (xhr.status >= 200 && xhr.status < 300) {
-          const owner = JSON.parse(xhr.response).data.threaded_conversation_with_injections_v2.instructions[0].entries[0].content.itemContent.tweet_results.result.legacy.user_id_str;
-          const userMentions = JSON.parse(xhr.response).data.threaded_conversation_with_injections_v2.instructions[0].entries[0].content.itemContent.tweet_results.result.legacy.entities.user_mentions.map(el => el.id_str);
 
+    xhr.onload = () => {
+      try {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          const owner = JSON.parse(xhr.response).data
+            .threaded_conversation_with_injections_v2.instructions[0].entries[0]
+            .content.itemContent.tweet_results.result.legacy.user_id_str;
+          const userMentions = JSON.parse(
+            xhr.response
+          ).data.threaded_conversation_with_injections_v2.instructions[0].entries[0].content.itemContent.tweet_results.result.legacy.entities.user_mentions.map(
+            (el) => el.id_str
+          );
           const users = [owner, ...userMentions];
           const filterDuplicate = users.filter((item, pos) => {
             return users.indexOf(item) === pos;
-          })
+          });
 
           resolve(filterDuplicate);
         } else {
           reject(xhr.response);
         }
+      } catch (error) {
+        reject(error);
+      }
     };
-    xhr.onerror = (err) => {reject(err);}
+    xhr.onerror = (err) => {
+      reject(err);
+    };
     xhr.send(null);
-  })
-} 
-
+  });
+}
 
 // ****************** Handle logic run bot ************************* //
 
@@ -400,72 +443,84 @@ async function awaitMillisecond(fn, millisecond) {
       } catch (err) {
         reject(err);
       }
-    }, millisecond)
-  })
+    }, millisecond);
+  });
 }
 
 async function startBot() {
   document.querySelector("#twitter-bot-start").disabled = true;
 
   const tweetsValue = document.querySelector("#twitter-bot-tweets").value;
-  const isAutoFavorite = document.querySelector("#twitter-bot-favorite").checked;
+  const isAutoFavorite = document.querySelector(
+    "#twitter-bot-favorite"
+  ).checked;
   const isAutoRetweet = document.querySelector("#twitter-bot-retweet").checked;
   const isAutoFollow = document.querySelector("#twitter-bot-follow").checked;
-  const isAutoComment = document.querySelector("#twitter-bot-comment-checkbox").checked;
+  const isAutoComment = document.querySelector(
+    "#twitter-bot-comment-checkbox"
+  ).checked;
   const commentContent = document.querySelector("#twitter-bot-comment").value;
-  const authorization = document.querySelector("#twitter-bot-authorization").value;
+  const authorization = document.querySelector(
+    "#twitter-bot-authorization"
+  ).value;
   const millisecond = document.querySelector("#twitter-bot-millisecond").value;
 
   if (!authorization.trim()) {
-    return alert('Please enter authorization!');
+    return alert("Please enter authorization!");
   }
   if (!tweetsValue.trim()) {
-    return alert('Please enter tweets!');
+    return alert("Please enter tweets!");
   }
   if (isAutoComment && !commentContent.trim()) {
-    return alert('Please enter comment!');
+    return alert("Please enter comment!");
   }
 
   if (!isAutoFavorite && !isAutoRetweet && !isAutoFollow && !isAutoComment) {
-    return alert('Please select at least auto action!');
+    return alert("Please select at least auto action!");
   }
 
-  document.querySelector('.twitter-bot--list').innerHTML = '';
+  document.querySelector(".twitter-bot--list").innerHTML = "";
 
   let tweets;
-  if (tweetsValue.includes('\r\n')) {
-    tweets = tweetsValue.split('\r\n')
-  } else if (tweetsValue.includes('\r')) {
-    tweets = tweetsValue.split('\r')
+  if (tweetsValue.includes("\r\n")) {
+    tweets = tweetsValue.split("\r\n");
+  } else if (tweetsValue.includes("\r")) {
+    tweets = tweetsValue.split("\r");
   } else {
-    tweets = tweetsValue.split('\n')
+    tweets = tweetsValue.split("\n");
   }
 
-  const filterValidTweets = tweets.map(tweet => tweet.trim()).filter((item, pos) => {
-    return item && tweets.indexOf(item) === pos;
-  })
+  const filterValidTweets = tweets
+    .map((tweet) => tweet.trim())
+    .filter((item, pos) => {
+      return item && tweets.indexOf(item) === pos;
+    });
 
-  tweets = filterValidTweets.map(tweet => ({
+  tweets = filterValidTweets.map((tweet) => ({
     url: tweet,
-    tweetId: tweet.split("/")[tweet.split("/").length - 1].split('?')[0]
-  }))
+    tweetId: tweet.split("/")[tweet.split("/").length - 1].split("?")[0],
+  }));
 
-  const defaultError = '{"errors":[{"message":"NumericString value expected. Received 15624798458455040002321312","extensions":{"name":"MalformedVariablesError","source":"Client","code":366,"kind":"Validation","tracing":{"trace_id":"b9db0465bae9c318"}},"code":366,"kind":"Validation","name":"MalformedVariablesError","source":"Client","tracing":{"trace_id":"b9db0465bae9c318"}}]}'
+  const defaultError =
+    '{"errors":[{"message":"NumericString value expected. Received 15624798458455040002321312","extensions":{"name":"MalformedVariablesError","source":"Client","code":366,"kind":"Validation","tracing":{"trace_id":"b9db0465bae9c318"}},"code":366,"kind":"Validation","name":"MalformedVariablesError","source":"Client","tracing":{"trace_id":"b9db0465bae9c318"}}]}';
   let errors = [];
 
-  for(let tweet of tweets) {
-    const {tweetId, url} = tweet;
+  for (let tweet of tweets) {
+    const { tweetId, url } = tweet;
     try {
-      if (isAutoFavorite) await awaitMillisecond(async () => {
-        await favoriteTweet(authorization, tweetId);
-      }, millisecond);
-      if (isAutoRetweet) await awaitMillisecond(async () => {
-        await createRetweet(authorization, tweetId)
-      }, millisecond);
-      if (isAutoComment) await awaitMillisecond(async () => {
-        await createComment(authorization, tweetId, commentContent)
-      }, millisecond);
-    
+      if (isAutoFavorite)
+        await awaitMillisecond(async () => {
+          await favoriteTweet(authorization, tweetId);
+        }, millisecond);
+      if (isAutoRetweet)
+        await awaitMillisecond(async () => {
+          await createRetweet(authorization, tweetId);
+        }, millisecond);
+      if (isAutoComment)
+        await awaitMillisecond(async () => {
+          await createComment(authorization, tweetId, commentContent);
+        }, millisecond);
+
       if (isAutoFollow) {
         const userMentions = await awaitMillisecond(async () => {
           return await getUserMentions(authorization, tweetId);
@@ -477,45 +532,53 @@ async function startBot() {
         }
       }
 
-      document.querySelector('.twitter-bot--list').insertAdjacentHTML('beforeend', `
+      document.querySelector(".twitter-bot--list").insertAdjacentHTML(
+        "beforeend",
+        `
         <div class="result-item success">
           <a target="_blank" href="${url}">${url}</a>
           <span> -   Done</span>
         </div>
-      `)
+      `
+      );
     } catch (error) {
-      console.log('error', {
-        error
+      console.log("error", {
+        error,
       });
-      document.querySelector('.twitter-bot--list').insertAdjacentHTML('beforeend', `
+      document.querySelector(".twitter-bot--list").insertAdjacentHTML(
+        "beforeend",
+        `
         <div class="result-item error">
           <a target="_blank" href="${url}">${url}</a>
           <span id="error-${tweetId}"> -   Error</span>
         </div>
-      `)
+      `
+      );
       errors.push({
         tweetId: tweetId,
-        error: defaultError
-      })
+        error: defaultError,
+      });
     }
   }
-
 
   for (let error of errors) {
     document.querySelector(`#error-${error.tweetId}`).onclick = () => {
       alert(error.error);
-    }
+    };
   }
 
-  localStorage.setItem('twitter-bot', JSON.stringify({
-    isAutoFavorite,
-    isAutoRetweet,
-    isAutoFollow,
-    isAutoComment,
-    commentContent,
-    authorization,
-    millisecond
-  }));
+  localStorage.setItem(
+    "twitter-bot",
+    JSON.stringify({
+      isAutoFavorite,
+      isAutoRetweet,
+      isAutoFollow,
+      isAutoComment,
+      commentContent,
+      authorization,
+      millisecond,
+    })
+  );
 
   document.querySelector("#twitter-bot-start").disabled = false;
 }
@@ -533,16 +596,18 @@ async function startBot() {
     isAutoComment,
     commentContent,
     authorization,
-    millisecond
-  } = localStorage.getItem('twitter-bot')? JSON.parse(localStorage.getItem('twitter-bot')): {
-    isAutoFavorite: true,
-    isAutoRetweet: true,
-    isAutoFollow: true,
-    isAutoComment: true,
-    authorization: '',
-    commentContent: '',
-    millisecond: 1000
-  };
+    millisecond,
+  } = localStorage.getItem("twitter-bot")
+    ? JSON.parse(localStorage.getItem("twitter-bot"))
+    : {
+        isAutoFavorite: true,
+        isAutoRetweet: true,
+        isAutoFollow: true,
+        isAutoComment: true,
+        authorization: "",
+        commentContent: "",
+        millisecond: 1000,
+      };
 
   let div = document.createElement("div");
   div.classList.add("twitter-bot");
@@ -571,19 +636,27 @@ async function startBot() {
           </div>
           
           <label class="bot-checkbox">Auto Favorite
-            <input id="twitter-bot-favorite" type="checkbox" ${isAutoFavorite? 'checked': ''}>
+            <input id="twitter-bot-favorite" type="checkbox" ${
+              isAutoFavorite ? "checked" : ""
+            }>
             <span class="checkmark"></span>
           </label>
           <label class="bot-checkbox">Auto Retweet
-            <input id="twitter-bot-retweet" type="checkbox" ${isAutoRetweet? 'checked': ''}>
+            <input id="twitter-bot-retweet" type="checkbox" ${
+              isAutoRetweet ? "checked" : ""
+            }>
             <span class="checkmark"></span>
           </label>
           <label class="bot-checkbox">Auto Follow Users Mention
-            <input id="twitter-bot-follow" type="checkbox" ${isAutoFollow? 'checked': ''}>
+            <input id="twitter-bot-follow" type="checkbox" ${
+              isAutoFollow ? "checked" : ""
+            }>
             <span class="checkmark"></span>
           </label>
           <label class="bot-checkbox">Auto Comment
-            <input id="twitter-bot-comment-checkbox" type="checkbox" ${isAutoComment? 'checked': ''}>
+            <input id="twitter-bot-comment-checkbox" type="checkbox" ${
+              isAutoComment ? "checked" : ""
+            }>
             <span class="checkmark"></span>
           </label>
           <input value="${commentContent}" id="twitter-bot-comment" placeholder="Enter comment">
@@ -609,14 +682,13 @@ async function startBot() {
   document.querySelector("body").appendChild(div);
 
   document.querySelector(".twitter-bot--toggle").onclick = (e) => {
-    console.log("toggled");
     document
       .querySelector(".twitter-bot")
       .classList.toggle("twitter-bot--open");
   };
 
   document.querySelector("#twitter-bot-start").onclick = (e) => {
-    startBot()
+    startBot();
   };
 
   // Your code here...
