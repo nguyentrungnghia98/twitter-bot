@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Twitter bot
 // @namespace    http://tampermonkey.net/
-// @version      0.1
-// @description  try to take over the world!
+// @version      1.0
+// @description  auto retweet, follow, comment
 // @author       You
 // @match        https://twitter.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=twitter.com
@@ -675,7 +675,6 @@ async function startBot() {
         </div>
      </div>
      </div>
-     
   </div>
   <button class="twitter-bot--toggle">Open</button>
   `;
