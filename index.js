@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Twitter bot
 // @namespace    http://tampermonkey.net/
-// @version      1.0
+// @version      2.0
 // @description  auto retweet, follow, comment
 // @author       You
 // @match        https://twitter.com/*
@@ -22,195 +22,203 @@ function addGlobalStyle(css) {
 }
 
 const css = `
-  .twitter-bot {
+    .twitter-bot {
+      position: absolute;
+      top: -2px;
+      width: 100%;
+      text-align: center;
+      padding: 0 12px;
+      box-sizing: border-box;
+    }
+    .twitter-bot * {
+      box-sizing: border-box;
+    }
+    .twitter-bot--toggle {
+      background: white;
+      border: 1px solid #d9d9d9;
+      padding: 8px 20px;
+      border-radius: 4px;
+      position: relative;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .twitter-bot--toggle::after {
+    content: "";
     position: absolute;
-    top: -2px;
-    width: 100%;
-    text-align: center;
-    padding: 0 12px;
-    box-sizing: border-box;
-  }
-  .twitter-bot * {
-    box-sizing: border-box;
-  }
-  .twitter-bot--toggle {
-    background: white;
-    border: 1px solid #d9d9d9;
-    padding: 8px 20px;
-    border-radius: 4px;
-    position: relative;
-    cursor: pointer;
-    font-weight: bold;
-  }
-  .twitter-bot--toggle::after {
-  content: "";
-  position: absolute;
-  bottom: -9px;
-    left: 28px;
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-top: 8px solid #dbdbdb;
-  }
-  .twitter-bot--config {
-    height: 0px;
-    transition: height 1s;
-    box-shadow: rgb(0 0 0 / 24%) 0px 3px 8px;
-    background: white;
-    position: relative;
-    display: flex;
-    overflow: hidden;
-  }
-  .twitter-bot--open .twitter-bot--config {
-    height: 680px;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .twitter-bot--form textarea {
-    padding: 10px;
-    max-width: 100%;
-    line-height: 1.5;
-    border-radius: 5px;
-    border: 1px solid #ddd;
-  }
-
-  .twitter-bot--form textarea:focus {
-    outline: none;
-  }
-
-  .twitter-bot--form input {
-    padding: 10px;
-    border-radius: 4px;
-    outline: none;
-    border: 1px solid #c9c9c9;
-    width: 100%;
-  }
-
-  .bot-form--tweets label {
-    display: block;
-    margin-bottom: 10px;
-  }
-  .bot-checkbox {
-    display: block;
-    position: relative;
-    padding-left: 24px;
-    margin-bottom: 12px;
-    cursor: pointer;
-    font-size: 16px;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-  }
-  .bot-checkbox  input {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
-    height: 0;
-    width: 0;
-  }
-  .checkmark {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 16px;
-    width: 16px;
-    background-color: #eee;
-    border-radius: 4px;
-  }
-  .bot-checkbox:hover input ~ .checkmark {
-    background-color: #ccc;
-  }
-  .bot-checkbox input:checked ~ .checkmark {
-    background-color: #2196F3;
-  }
-  .bot-checkbox input:checked ~ .checkmark:after {
-    display: block;
-  }
-  .bot-checkbox .checkmark:after {
-    left: 9px;
-    top: 5px;
-    width: 5px;
-    height: 10px;
-    border: solid white;
-    border-width: 0 3px 3px 0;
-    -webkit-transform: rotate(45deg);
-    -ms-transform: rotate(45deg);
-    transform: rotate(45deg);
-  }
-  .twitter-bot--donate {
-    text-align: right;
-    padding: 20px;
-    border-bottom: 1px solid #ebebeb;
-    margin-bottom: 20px;
-  }
-  .twitter-bot--box {
-    display: flex;
-  }
-  .twitter-bot--form {
-    width: 40%;
-  }
-  .bot-form--header {
-    font-size: 20px;
-    font-weight: bold;
-    margin-bottom: 16px;
-  }
-  .bot-form--content {
-    text-align: left;
-    padding: 0 24px;
-  }
-  .bot-form--tweets {
-    margin-bottom: 16px;
-  }
-  .bot-form--tweets textarea {
-    width: 100%;
-  }
-
-  .twitter-bot--result {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-  }
-
-  .twitter-bot--title {
-    font-size: 20px;
-    font-weight: bold;
-    margin-bottom: 16px;
-  }
-  .result-item span {
-    margin-left: 8px;
-  }
-  .success span {
-    color: #00dd1b;
-  }
-  .error span {
-    color: tomato;
-  }
-  .error-detail {
-    display: none;
-  }
-  .bot-form--submit {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 12px;
-  }
-  .bot-form--submit button {
-    background: #1c98eb;
-    border: none;
-    padding: 8px 20px;
-    border-radius: 4px;
-    cursor: pointer;
-    color: white;
-  }
-  .bot-form--submit button:disabled {
-    background: #6da1c5;
-    cursor: no-drop;
-  }
-  .twitter-bot--list {
-    max-height: 400px;
-    overflow-y: scroll;
-  }
-`;
+    bottom: -9px;
+      left: 28px;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-top: 8px solid #dbdbdb;
+    }
+    .twitter-bot--config {
+      height: 0px;
+      transition: height 1s;
+      box-shadow: rgb(0 0 0 / 24%) 0px 3px 8px;
+      background: white;
+      position: relative;
+      display: flex;
+      overflow: hidden;
+    }
+    .twitter-bot--open .twitter-bot--config {
+      height: 750px;
+      display: flex;
+      flex-direction: column;
+    }
+  
+    .twitter-bot--form textarea {
+      padding: 10px;
+      max-width: 100%;
+      line-height: 1.5;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+    }
+  
+    .twitter-bot--form textarea:focus {
+      outline: none;
+    }
+  
+    .twitter-bot--form input {
+      padding: 10px;
+      border-radius: 4px;
+      outline: none;
+      border: 1px solid #c9c9c9;
+      width: 100%;
+    }
+  
+    .bot-form--tweets label {
+      display: block;
+      margin-bottom: 10px;
+    }
+    .bot-checkbox {
+      display: block;
+      position: relative;
+      padding-left: 24px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      font-size: 16px;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+    .bot-checkbox  input {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+      height: 0;
+      width: 0;
+    }
+    .checkmark {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 16px;
+      width: 16px;
+      background-color: #eee;
+      border-radius: 4px;
+    }
+    .bot-checkbox:hover input ~ .checkmark {
+      background-color: #ccc;
+    }
+    .bot-checkbox input:checked ~ .checkmark {
+      background-color: #2196F3;
+    }
+    .bot-checkbox input:checked ~ .checkmark:after {
+      display: block;
+    }
+    .bot-checkbox .checkmark:after {
+      left: 9px;
+      top: 5px;
+      width: 5px;
+      height: 10px;
+      border: solid white;
+      border-width: 0 3px 3px 0;
+      -webkit-transform: rotate(45deg);
+      -ms-transform: rotate(45deg);
+      transform: rotate(45deg);
+    }
+    .twitter-bot--donate {
+      text-align: right;
+      padding: 20px;
+      border-bottom: 1px solid #ebebeb;
+      margin-bottom: 20px;
+    }
+    .twitter-bot--box {
+      display: flex;
+    }
+    .twitter-bot--form {
+      width: 40%;
+    }
+    .bot-form--header {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 16px;
+    }
+    .bot-form--content {
+      text-align: left;
+      padding: 0 24px;
+    }
+    .bot-form--tweets {
+      margin-bottom: 16px;
+    }
+    .bot-form--tweets textarea {
+      width: 100%;
+    }
+  
+    .twitter-bot--result {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+  
+    .twitter-bot--title {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 16px;
+    }
+    .result-item span {
+      margin-left: 8px;
+    }
+    .success span {
+      color: #00dd1b;
+    }
+    .error span {
+      color: tomato;
+    }
+    .error-detail {
+      display: none;
+    }
+    .bot-form--submit {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 12px;
+    }
+    .bot-form--submit button {
+      background: #1c98eb;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      color: white;
+    }
+    .bot-form--submit button:disabled {
+      background: #6da1c5;
+      cursor: no-drop;
+    }
+    .twitter-bot--list {
+      max-height: 400px;
+      overflow-y: scroll;
+    }
+    .random-tag {
+      margin-left: 16px;
+    }
+    #twitter-bot-number-tag {
+      margin-left: 16px;
+      width: calc(100% - 16px);
+      margin-bottom: 16px;
+    }
+  `;
 
 // ****************** Handle logic call api twitter ************************* //
 const favoriteTweetQueryId = "lI07N6Otwv1PhnEgXILM7A";
@@ -221,7 +229,7 @@ const createTweetQueryId = "sRwUG9yq5p8bdGRhIIywDA";
 const xCsrfToken = document.cookie
   .split("; ")
   .find((item) => item.includes("ct0="))
-  .split("=")[1];
+  ?.split("=")[1];
 
 function setHeaders(xhr, authorization, notSetJson) {
   xhr.setRequestHeader("authorization", authorization);
@@ -448,18 +456,20 @@ async function awaitMillisecond(fn, millisecond) {
 }
 
 async function startBot() {
-  document.querySelector("#twitter-bot-start").disabled = true;
-
   const tweetsValue = document.querySelector("#twitter-bot-tweets").value;
+  const numberTag = document.querySelector("#twitter-bot-number-tag").value;
   const isAutoFavorite = document.querySelector(
     "#twitter-bot-favorite"
   ).checked;
   const isAutoRetweet = document.querySelector("#twitter-bot-retweet").checked;
   const isAutoFollow = document.querySelector("#twitter-bot-follow").checked;
+  const isRandomTag = document.querySelector("#twitter-bot-random-tag").checked;
   const isAutoComment = document.querySelector(
     "#twitter-bot-comment-checkbox"
   ).checked;
-  const commentContent = document.querySelector("#twitter-bot-comment").value;
+  const commentContent = document
+    .querySelector("#twitter-bot-comment")
+    .value.replace(/\s+/g, " ");
   const authorization = document.querySelector(
     "#twitter-bot-authorization"
   ).value;
@@ -475,13 +485,36 @@ async function startBot() {
     return alert("Please enter comment!");
   }
 
+  const numberTagSent = Number(numberTag);
+  if (isNaN(numberTagSent) || numberTagSent < 1) {
+    return alert("Please enter value number tags!");
+  }
+
+  const tags = commentContent.split(" ").filter((el) => el[0] === "@");
+  if (isRandomTag) {
+    if (!tags.length) {
+      return alert("Please enter @!");
+    }
+  }
+  if (tags.length < numberTagSent) {
+    return alert("Number tag sent must be less than number of tags!");
+  }
+
+  if (isAutoComment && !commentContent.trim()) {
+    return alert("Please enter comment!");
+  }
+
   if (!isAutoFavorite && !isAutoRetweet && !isAutoFollow && !isAutoComment) {
     return alert("Please select at least auto action!");
   }
 
+  document.querySelector("#twitter-bot-start").disabled = true;
+
   document.querySelector(".twitter-bot--list").innerHTML = "";
 
   let tweets;
+  let changePositionTweets = [];
+
   if (tweetsValue.includes("\r\n")) {
     tweets = tweetsValue.split("\r\n");
   } else if (tweetsValue.includes("\r")) {
@@ -489,6 +522,22 @@ async function startBot() {
   } else {
     tweets = tweetsValue.split("\n");
   }
+
+  if (tweets.length > 0) {
+    for (let index = 0; index < tweets.length; index++) {
+      const remainingTweets = tweets.filter(
+        (item) => !changePositionTweets.includes(item)
+      );
+      const randomNumber =
+        tweets.length > 1
+          ? Math.floor(Math.random() * remainingTweets.length)
+          : 0;
+
+      changePositionTweets.push(remainingTweets[randomNumber] || "");
+    }
+  }
+
+  tweets = changePositionTweets;
 
   const filterValidTweets = tweets
     .map((tweet) => tweet.trim())
@@ -501,8 +550,6 @@ async function startBot() {
     tweetId: tweet.split("/")[tweet.split("/").length - 1].split("?")[0],
   }));
 
-  const defaultError =
-    '{"errors":[{"message":"NumericString value expected. Received 15624798458455040002321312","extensions":{"name":"MalformedVariablesError","source":"Client","code":366,"kind":"Validation","tracing":{"trace_id":"b9db0465bae9c318"}},"code":366,"kind":"Validation","name":"MalformedVariablesError","source":"Client","tracing":{"trace_id":"b9db0465bae9c318"}}]}';
   let errors = [];
 
   for (let tweet of tweets) {
@@ -518,7 +565,42 @@ async function startBot() {
         }, millisecond);
       if (isAutoComment)
         await awaitMillisecond(async () => {
-          await createComment(authorization, tweetId, commentContent);
+          if (isRandomTag) {
+            //    abc @1 @2 @3 @4 @5 xyz
+            // -> abc @2 @1 @5 xyz
+            let startContent = [];
+            let endContent = [];
+            let isEndStartContent = false;
+
+            commentContent.split(" ").forEach((el) => {
+              if (el[0] === "@") {
+                isEndStartContent = true;
+              } else {
+                if (!isEndStartContent) {
+                  startContent.push(el);
+                } else {
+                  endContent.push(el);
+                }
+              }
+            });
+
+            let randomTags = [];
+            while (randomTags.length < numberTagSent) {
+              let random = Math.floor(Math.random() * tags.length);
+              if (!randomTags.includes(tags[random])) {
+                randomTags.push(tags[random]);
+              }
+            }
+
+            const newComment = [
+              ...startContent,
+              ...randomTags,
+              ...endContent,
+            ].join(" ");
+            await createComment(authorization, tweetId, newComment);
+          } else {
+            await createComment(authorization, tweetId, commentContent);
+          }
         }, millisecond);
 
       if (isAutoFollow) {
@@ -535,11 +617,11 @@ async function startBot() {
       document.querySelector(".twitter-bot--list").insertAdjacentHTML(
         "beforeend",
         `
-        <div class="result-item success">
-          <a target="_blank" href="${url}">${url}</a>
-          <span> -   Done</span>
-        </div>
-      `
+          <div class="result-item success">
+            <a target="_blank" href="${url}">${url}</a>
+            <span> -   Done</span>
+          </div>
+        `
       );
     } catch (error) {
       console.log("error", {
@@ -548,15 +630,15 @@ async function startBot() {
       document.querySelector(".twitter-bot--list").insertAdjacentHTML(
         "beforeend",
         `
-        <div class="result-item error">
-          <a target="_blank" href="${url}">${url}</a>
-          <span id="error-${tweetId}"> -   Error</span>
-        </div>
-      `
+          <div class="result-item error">
+            <a target="_blank" href="${url}">${url}</a>
+            <span id="error-${tweetId}"> -   Error</span>
+          </div>
+        `
       );
       errors.push({
-        tweetId: tweetId,
-        error: defaultError,
+        tweetId,
+        error,
       });
     }
   }
@@ -574,6 +656,8 @@ async function startBot() {
       isAutoRetweet,
       isAutoFollow,
       isAutoComment,
+      isRandomTag,
+      numberTag: numberTagSent,
       commentContent,
       authorization,
       millisecond,
@@ -594,6 +678,8 @@ async function startBot() {
     isAutoRetweet,
     isAutoFollow,
     isAutoComment,
+    isRandomTag = true,
+    numberTag = 3,
     commentContent,
     authorization,
     millisecond,
@@ -604,6 +690,8 @@ async function startBot() {
         isAutoRetweet: true,
         isAutoFollow: true,
         isAutoComment: true,
+        numberTag: 3,
+        isRandomTag: true,
         authorization: "",
         commentContent: "",
         millisecond: 1000,
@@ -612,72 +700,79 @@ async function startBot() {
   let div = document.createElement("div");
   div.classList.add("twitter-bot");
   div.innerHTML = `
-  <div class="twitter-bot--config">
-     <div class="twitter-bot--donate">
-       <span><b>Donate:</b></span><span style="margin-left: 5px;">0xC9d60454152F19ab50d0fdB983f81bD1f0d0967F</span>
-     </div>
-     <div class="twitter-bot--box">
-     <div class="twitter-bot--form">
-        <div class="bot-form--header">Twitter Bot</div>
-
-        <div class="bot-form--content">
-          <div class="bot-form--tweets">
-            <label for="authorization">Authorization:</label>
-            <input value="${authorization}" id="twitter-bot-authorization" placeholder="Enter authorization" id="authorization" name="authorization">
+    <div class="twitter-bot--config">
+       <div class="twitter-bot--donate">
+         <span><b>Donate:</b></span><span style="margin-left: 5px;">0xC9d60454152F19ab50d0fdB983f81bD1f0d0967F</span>
+       </div>
+       <div class="twitter-bot--box">
+       <div class="twitter-bot--form">
+          <div class="bot-form--header">Twitter Bot</div>
+  
+          <div class="bot-form--content">
+            <div class="bot-form--tweets">
+              <label for="authorization">Authorization:</label>
+              <input value="${authorization}" id="twitter-bot-authorization" placeholder="Enter authorization" id="authorization" name="authorization">
+            </div>
+            <div class="bot-form--tweets">
+              <label for="millisecond">Delay (millisecond):</label>
+              <input value="${millisecond}" id="twitter-bot-millisecond" placeholder="Enter millisecond" id="millisecond" name="millisecond">
+            </div>
+            <div class="bot-form--tweets">
+              <label for="story">Tweets:</label>
+              <textarea id="twitter-bot-tweets" placeholder="Enter tweets" id="story" name="story"
+                      rows="5"></textarea>
+            </div>
+  
+            <label class="bot-checkbox">Auto Favorite
+              <input id="twitter-bot-favorite" type="checkbox" ${
+                isAutoFavorite ? "checked" : ""
+              }>
+              <span class="checkmark"></span>
+            </label>
+            <label class="bot-checkbox">Auto Retweet
+              <input id="twitter-bot-retweet" type="checkbox" ${
+                isAutoRetweet ? "checked" : ""
+              }>
+              <span class="checkmark"></span>
+            </label>
+            <label class="bot-checkbox">Auto Follow Users Mention
+              <input id="twitter-bot-follow" type="checkbox" ${
+                isAutoFollow ? "checked" : ""
+              }>
+              <span class="checkmark"></span>
+            </label>
+            <label class="bot-checkbox">Auto Comment
+              <input id="twitter-bot-comment-checkbox" type="checkbox" ${
+                isAutoComment ? "checked" : ""
+              }>
+              <span class="checkmark"></span>
+            </label>
+            <label class="bot-checkbox random-tag">Random tag
+              <input id="twitter-bot-random-tag" type="checkbox" ${
+                isRandomTag ? "checked" : ""
+              }>
+              <span class="checkmark"></span>
+            </label>
+            <input value="${numberTag}" class="twitter-bot-number-tag" id="twitter-bot-number-tag" placeholder="Enter number">
+            <input value="${commentContent}" id="twitter-bot-comment" placeholder="Enter comment">
+            <div class="bot-form--submit">
+              <button id="twitter-bot-start">Start</button>
+            </div>
           </div>
-          <div class="bot-form--tweets">
-            <label for="millisecond">Delay (millisecond):</label>
-            <input value="${millisecond}" id="twitter-bot-millisecond" placeholder="Enter millisecond" id="millisecond" name="millisecond">
-          </div>
-          <div class="bot-form--tweets">
-            <label for="story">Tweets:</label>
-            <textarea id="twitter-bot-tweets" placeholder="Enter tweets" id="story" name="story"
-                    rows="5"></textarea>
-          </div>
-          
-          <label class="bot-checkbox">Auto Favorite
-            <input id="twitter-bot-favorite" type="checkbox" ${
-              isAutoFavorite ? "checked" : ""
-            }>
-            <span class="checkmark"></span>
-          </label>
-          <label class="bot-checkbox">Auto Retweet
-            <input id="twitter-bot-retweet" type="checkbox" ${
-              isAutoRetweet ? "checked" : ""
-            }>
-            <span class="checkmark"></span>
-          </label>
-          <label class="bot-checkbox">Auto Follow Users Mention
-            <input id="twitter-bot-follow" type="checkbox" ${
-              isAutoFollow ? "checked" : ""
-            }>
-            <span class="checkmark"></span>
-          </label>
-          <label class="bot-checkbox">Auto Comment
-            <input id="twitter-bot-comment-checkbox" type="checkbox" ${
-              isAutoComment ? "checked" : ""
-            }>
-            <span class="checkmark"></span>
-          </label>
-          <input value="${commentContent}" id="twitter-bot-comment" placeholder="Enter comment">
-          <div class="bot-form--submit">
-            <button id="twitter-bot-start">Start</button>
-          </div>
+       </div>
+  
+       <div class="twitter-bot--result">
+        <div class="twitter-bot--title">
+          Result
         </div>
-     </div>
-
-     <div class="twitter-bot--result">
-      <div class="twitter-bot--title">
-        Result
-      </div>
-        <div class="twitter-bot--list">
-          
-        </div>
-     </div>
-     </div>
-  </div>
-  <button class="twitter-bot--toggle">Open</button>
-  `;
+          <div class="twitter-bot--list">
+  
+          </div>
+       </div>
+       </div>
+    </div>
+    <button class="twitter-bot--toggle">Open</button>
+    `;
   document.querySelector("body").appendChild(div);
 
   document.querySelector(".twitter-bot--toggle").onclick = (e) => {
